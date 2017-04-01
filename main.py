@@ -96,11 +96,11 @@ def processimages():
 
 	command = "bash th "
 	command = command + NEURAL_STYLE_PATH + "neural_style.lua"
-	command = command + " -style_image %s -content_image %s -gpu -1 -image_size 256 -save_iter 1"%(style_img,content_img)
+	command = command + " -style_image %s -content_image %s -gpu -1"%(style_img,content_img)
 	# command = command + " --content_img_dir ./ --style_imgs_dir ./ --device /cpu:0"
 	# command += " -proto_file "+NEURAL_STYLE_PATH+"models/train_val.prototxt -output_image teste.jpg"
-	command += " -output_image %s/img.png"%(outputDirPath+dirName)
-	
+	command += " -output_image %s/img.png "%(outputDirPath+dirName)
+	command += args
 	pq.addProcess(dirName,command)
 	return str(pq.q.getAll()),200
 
@@ -216,7 +216,5 @@ class ProcessQueue():
 
 
 pq = ProcessQueue();
-
-app.run(debug=False)
 
 # python Documents\neural-style-server\main.py

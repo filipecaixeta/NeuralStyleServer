@@ -510,13 +510,9 @@
 		$.getJSON( 'images/results/'+folder,{})
 			.done(function( data ) 
 			{
-				firstTime=false;
-				if (numberOfImages==0)
-					firstTime=true;
-				if(firstTime==true)
-					$("#submissionImages").html('<div class="row multi-columns-row">');
+				$("#submissionImages").html('<div class="row multi-columns-row">');
 				// folder = folder.replace('-','.');
-				for (var i = 0; i < data.length-numberOfImages; i++) 
+				for (var i = 0; i < data.length; i++) 
 				{
 					files = data[i].split('_');
 					html = '\
@@ -525,9 +521,7 @@
 						</div>';
 					$("#submissionImages").append(html);
 				}
-				numberOfImages=data.length;
-				if(firstTime==true)
-					$("#submissionImages").append("</div>");
+				$("#submissionImages").append("</div>");
 			}).complete(function() 
 			{
 			  setTimeout(updateSubmissionImages, 5000,folder);
@@ -636,7 +630,7 @@
 		<input id="hidden-photos-container" maxlength="40" name="content_img" type="hidden" />
 		<input id="hidden-styles-container" maxlength="40" name="style_img" type="hidden" />
 		<div class="text-center">
-			<input type="text" name="args" value="-gpu 0 -backend clnn -num_iterations 1000 -content_weight 10 -style_weight 1000 -image_size 512 -optimizer adam" style="width: 100%;"><br><br>
+			<input type="text" name="args" value="-image_size 512 -save_iter 5" style="width: 100%;"><br><br>
 			<input type="submit" class="btn btn-primary" value="Submit">
 		</div>
 	</form>
