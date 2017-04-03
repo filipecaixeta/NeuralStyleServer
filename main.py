@@ -64,6 +64,12 @@ def removeProcess():
 	pq.removeProcess(pid)
 	if os.path.exists("static/results/"+pid):
 		shutil.rmtree("static/results/"+pid)
+	return 'removed'
+
+@app.route('/stop/', methods=['POST'])
+def stopProcess():
+	pid = request.form.get('pid')
+	pq.removeProcess(pid)
 	return 'stopped'
 
 @app.route('/uploadfile/<path:folder>', methods=['POST'])
@@ -96,7 +102,7 @@ def processimages():
 
 	command = "bash th "
 	command = command + NEURAL_STYLE_PATH + "neural_style.lua"
-	command = command + " -style_image %s -content_image %s -gpu -1"%(style_img,content_img)
+	command = command + " -style_image %s -content_image %s"%(style_img,content_img)
 	# command = command + " --content_img_dir ./ --style_imgs_dir ./ --device /cpu:0"
 	# command += " -proto_file "+NEURAL_STYLE_PATH+"models/train_val.prototxt -output_image teste.jpg"
 	command += " -output_image %s/img.png "%(outputDirPath+dirName)
@@ -172,6 +178,7 @@ def f(q):
 		lockPopen.acquire()
 		d = q.get()
 		print(d.split(' '))
+		print(d)
 		pProcess = Popen(d.split(' '), stdout=PIPE)
 		lockPopen.release()
 		pProcess.wait()

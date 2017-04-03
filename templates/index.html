@@ -410,7 +410,8 @@
 	var currentSelected={"photos-container":null,"style-container":null};
 	var isOnFocus=true;
 	var testeTestoso=false;
-	var numberOfImages = 0
+	var numberOfImages = 0;
+	var submissionFolder = false;
 	$(document).bind('focus', function() 
 	{
 	   isOnFocus=true;
@@ -472,8 +473,22 @@
 				data: {pid:id},
 				success:function(data)
 				{
-					if (data=='stopped')
+					if (data=='removed')
 						$("#"+id).remove();
+				}
+			});
+	}
+	function stopProcess(id) 
+	{
+		$.ajax({
+				url:'/stop/',
+				type:'post',
+				data: {pid:id},
+				success:function(data)
+				{
+					if (data=='stopped')
+						$("#"+id).css("background-color", "#f0f0f0");
+					submissionFolder===false;
 				}
 			});
 	}
@@ -488,15 +503,16 @@
 					files = data[i].split('_');
 					html = '\
 					<div class="row submissions" style="margin-top: 50px" id="'+data[i]+'">\
-						<div class="col-md-5">\
+						<div class="col-md-4">\
 							<img src="static/photo/thumbnail/'+files[0].replace('-','.')+'" class="img-center">\
 						</div>\
-						<div class="col-md-5">\
+						<div class="col-md-4">\
 							<img src="static/style/thumbnail/'+files[1].replace('-','.')+'" class="img-center">\
 						</div>\
-						<div class="col-md-2">\
+						<div class="col-md-4">\
 							<div class="btn-group" role="group" aria-label="...">\
-								<bottom class="btn btn-primary" onclick="numberOfImages=0;updateSubmissionImages(\''+data[i]+'\');">View</bottom>\
+								<bottom class="btn btn-primary" onclick="numberOfImages=0;submissionFolder=\''+data[i]+'\';updateSubmissionImages();">View</bottom>\
+								<bottom class="btn btn-default" onclick="stopProcess(\''+data[i]+'\');">Stop</bottom>\
 								<bottom class="btn btn-default" onclick="removeProcess(\''+data[i]+'\');">Delete</bottom>\
 							</div>\
 						</div>\
@@ -505,26 +521,28 @@
 				}
 			});
 	}
-	function updateSubmissionImages(folder) 
+	function updateSubmissionImages() 
 	{
-		$.getJSON( 'images/results/'+folder,{})
+		if (submissionFolder===false)
+			return;
+		$.getJSON( 'images/results/'+submissionFolder,{})
 			.done(function( data ) 
 			{
 				$("#submissionImages").html('<div class="row multi-columns-row">');
-				// folder = folder.replace('-','.');
+				// submissionFolder = submissionFolder.replace('-','.');
 				for (var i = 0; i < data.length; i++) 
 				{
 					files = data[i].split('_');
 					html = '\
 						<div class="col-md-4">\
-							<img src="static/results/'+folder+'/'+data[i]+'" class="img-responsive img-center" style="margin-bottom: 10px;">\
+							<a alt="'+data[i]+'" href="static/results/'+submissionFolder+'/'+data[i]+'" download><img src="static/results/'+submissionFolder+'/'+data[i]+'" class="img-responsive img-center" style="margin-bottom: 10px;" alt="'+data[i]+'"></a>\
 						</div>';
 					$("#submissionImages").append(html);
 				}
 				$("#submissionImages").append("</div>");
 			}).complete(function() 
 			{
-			  setTimeout(updateSubmissionImages, 5000,folder);
+			  setTimeout(updateSubmissionImages, 5000);
 			});
 	}
 	function updateImages(folder,elem) 
